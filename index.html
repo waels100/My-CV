@@ -1671,6 +1671,25 @@
     transform: translateX(-50%) translateY(0);
   }
 
+  /* ============== DESKTOP REFINEMENTS (>=961px) ============== */
+  /* Mobile/tablet layout is untouched: this block never applies below 961px. */
+  @media (min-width: 961px) {
+    /* Stop the column from stretching edge-to-edge on wide monitors */
+    .main { max-width: 1240px; width: 100%; margin-inline: auto; }
+
+    /* Trajectory filled the whole first screen and scaled its labels up with it */
+    .trajectory-svg { aspect-ratio: auto; height: 360px; }
+
+    /* Radar sat small inside a tall, mostly empty card */
+    .radar-wrap { min-height: 0; padding: 0; }
+    .radar-svg { max-width: 620px; }
+
+    /* Donut: bigger dial, legend centred under it instead of splayed to the edges */
+    .donut-wrap { flex: 1; margin-bottom: 4px; }
+    .donut-svg { max-width: 208px; height: 208px; }
+    .donut-legend { width: 100%; max-width: 360px; margin-inline: auto; }
+  }
+
   /* ============== RESPONSIVE BREAKPOINTS ============== */
 
   /* Large Tablet / Small Desktop */
