@@ -313,6 +313,7 @@
     letter-spacing: 0.05em;
   }
 
+  .sidebar-glance { display: none; }
   .sidebar-footer { margin-top: auto; padding-top: 20px; border-top: 1px solid var(--border); }
 
   .user-card {
@@ -1674,6 +1675,12 @@
   /* ============== DESKTOP REFINEMENTS (>=961px) ============== */
   /* Mobile/tablet layout is untouched: this block never applies below 961px. */
   @media (min-width: 961px) {
+    /* The sidebar is position:sticky, but `overflow-x: hidden` on html/body
+       creates a scroll container and silently kills sticky, so the sidebar
+       scrolled away and left a blank white column. `clip` prevents the same
+       horizontal scroll WITHOUT creating a scroll container, so sticky works. */
+    html, body { overflow-x: clip; }
+
     /* Stop the column from stretching edge-to-edge on wide monitors */
     .main { max-width: 1240px; width: 100%; margin-inline: auto; }
 
@@ -1688,6 +1695,97 @@
     .donut-wrap { flex: 1; margin-bottom: 4px; }
     .donut-svg { max-width: 208px; height: 208px; }
     .donut-legend { width: 100%; max-width: 360px; margin-inline: auto; }
+
+    /* Sidebar had a tall empty band between the nav and the footer card.
+       Fill it with a compact snapshot + contact block.
+       Gated on min-height too: below ~840px there is genuinely no room,
+       so it stays hidden rather than pushing the footer card off-screen. */
+    .sidebar-footer { margin-top: auto; }
+  }
+
+  @media (min-width: 961px) and (min-height: 840px) {
+    .sidebar-glance {
+      display: flex;
+      flex-direction: column;
+      margin-top: auto;
+    }
+    .sidebar-glance .nav-label { margin-bottom: 8px; }
+
+    .sb-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .sb-stat {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      padding: 8px 10px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface-muted);
+      min-width: 0;
+    }
+    .sb-stat-v {
+      font-family: 'Instrument Serif', 'Thmanyah Serif Display', Georgia, serif;
+      font-size: 15px;
+      line-height: 1.15;
+      color: var(--ink);
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+    }
+    .sb-stat-k {
+      font-size: 9px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-4);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .sb-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      margin-top: 10px;
+      padding: 8px 10px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: transparent;
+      font-family: inherit;
+      font-size: 11px;
+      color: var(--ink-2);
+      text-align: start;
+      cursor: pointer;
+      transition: border-color 0.2s var(--ease), background 0.2s var(--ease);
+    }
+    .sb-status:hover { border-color: var(--border-strong); background: var(--surface-muted); }
+    .sb-status-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--positive); flex-shrink: 0;
+      animation: pulse 2s infinite;
+    }
+
+    .sb-link {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      width: 100%;
+      margin-top: 2px;
+      padding: 5px 10px;
+      border: none;
+      border-radius: 6px;
+      background: transparent;
+      font-family: inherit;
+      font-size: 11px;
+      color: var(--ink-3);
+      text-align: start;
+      cursor: pointer;
+      transition: background 0.2s var(--ease), color 0.2s var(--ease);
+    }
+    .sb-link:hover { background: var(--surface-muted); color: var(--ink); }
+    .sb-link-ic { font-size: 12px; color: var(--ink-4); flex-shrink: 0; }
+    .sb-link-t { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+
+    .sidebar-footer { margin-top: 16px; }
   }
 
   /* ============== RESPONSIVE BREAKPOINTS ============== */
@@ -2150,6 +2248,16 @@
 <span class="ic">✉</span>
 <span data-i18n="sidebar-contact">Contact</span>
 </button>
+</div>
+<div class="sidebar-glance">
+<div class="nav-label" data-i18n="sb-glance">At a glance</div>
+<div class="sb-stats">
+<div class="sb-stat"><span class="sb-stat-v keep-ltr" data-i18n="sb-exp-val">14.9 yrs</span><span class="sb-stat-k" data-i18n="sb-exp">Experience</span></div>
+<div class="sb-stat"><span class="sb-stat-v keep-ltr" data-i18n="sb-current-val">3.4 yrs</span><span class="sb-stat-k" data-i18n="sb-current">Current</span></div>
+</div>
+<button class="sb-status" onclick="openConfigModal('chipAvailable')"><span class="sb-status-dot"></span><span data-i18n="sb-open">Open to opportunities</span></button>
+<button class="sb-link" onclick="openContactModal('email')"><span class="sb-link-ic">✉</span><span class="sb-link-t">waels100@hotmail.com</span></button>
+<button class="sb-link" onclick="openContactModal('mobile')"><span class="sb-link-ic">✆</span><span class="sb-link-t keep-ltr">+966 59 244 1691</span></button>
 </div>
 <div class="sidebar-footer">
 <div class="user-card" onclick="openConfigModal('userCard')">
@@ -3743,6 +3851,17 @@ const I18N = {
     'info-email-label': 'Email',
     'info-email-sub': 'Tap to email or copy',
 
+    // Sidebar glance panel (desktop only)
+    'sb-glance': 'At a glance',
+    'sb-exp': 'Experience',
+    'sb-exp-val': '14.9 yrs',
+    'sb-current': 'Current',
+    'sb-current-val': '3.4 yrs',
+    'sb-promos': 'Promotions',
+    'sb-promos-val': '03',
+    'sb-open': 'Open to opportunities',
+    'sb-contact': 'Contact',
+
     // Radar competency labels
     'radar-leadership': 'Leadership',
     'radar-teamwork': 'Teamwork',
@@ -3910,6 +4029,17 @@ const I18N = {
     'info-mobile-sub': 'اضغط للاتصال أو النسخ',
     'info-email-label': 'البريد الإلكتروني',
     'info-email-sub': 'اضغط للمراسلة أو النسخ',
+
+    // لوحة اللمحة السريعة في الشريط الجانبي (الكمبيوتر فقط)
+    'sb-glance': 'لمحة سريعة',
+    'sb-exp': 'إجمالي الخبرة',
+    'sb-exp-val': '١٤٫٩ سنة',
+    'sb-current': 'الحالي',
+    'sb-current-val': '٣٫٤ سنوات',
+    'sb-promos': 'الترقيات',
+    'sb-promos-val': '٣',
+    'sb-open': 'منفتح على الفرص',
+    'sb-contact': 'التواصل',
 
     // Radar competency labels
     'radar-leadership': 'القيادة',
